@@ -1,10 +1,32 @@
-<case>
-  <!--This case is generated from a template oneSlotNlgTemplate.xml for slot='#_FIELD_NAME_#' -->
+
+ <INSERT>
+  <case>
+   <!--NLG question generated from oneSlotNlgTemplate.xml for slot='#_FIELD_NAME_#' -->
 				<condition>
 					<if var="a_m" relation="=" value="Ask(#_FIELD_NAME_#)" />
 				</condition> 
 				<effect util="1">
 					<set var="u_m" value="#_FIELD_NLG_#" />
 				</effect>
-  </case>
+  </case> 
   
+  <case>
+	<!--NLG implicit confirm from oneSlotNlgTemplate.xml for slot='#_FIELD_NAME_#' -->
+	<!--  if previous machine utterance was not initial confirmation  -->
+				<condition>
+					<if value="Ground(#_FIELD_NAME_#,{SlotValue})" var="a_m"/>	
+					<if relation="!=" value="(OK,|and the)*" var="u_m"/>
+				</condition>
+				<effect util="1">
+					<set value="OK, #_FIELD_CONFIRM_#." var="u_m"/>
+				</effect>
+	</case>
+	<case>
+				<condition>
+					<if value="Ground(#_FIELD_NAME_#,{SlotValue})" var="a_m"/>	
+				</condition>
+				<effect util="1">
+					<set value="and #_FIELD_CONFIRM_# ." var="u_m"/>
+				</effect>
+	</case>  
+</INSERT>

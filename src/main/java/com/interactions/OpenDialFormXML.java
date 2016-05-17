@@ -6,12 +6,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,6 +55,8 @@ public class OpenDialFormXML {
 	String [] mustFollow;
 	
 	String [] nlg;
+	
+	String [] implicit;
 	
 	String [] b_optional;
 
@@ -120,6 +126,14 @@ public class OpenDialFormXML {
 	}
 
 
+	public String[] getImplicit() {
+		return implicit;
+	}
+
+	public void setImplicit(String[] implicit) {
+		this.implicit = implicit;
+	}
+
 	public String[] getB_optional() {
 		return b_optional;
 	}
@@ -150,17 +164,16 @@ public class OpenDialFormXML {
 	
 	private final String SLOT_NAMES_ALL_XPATH = "/domain/initialstate/variable[@id='Slots']/value";
 	private final String SLOT_NAMES_OPTIONAL_XPATH = "/domain/initialstate/variable[@id='optional']/value";
-	private final String SLOT_PAIRS_PRECEDENCE_XPATH = "/domain/initialstate/variable[@id='precedence']/value";
+	//private final String SLOT_PAIRS_PRECEDENCE_XPATH = "/domain/initialstate/variable[@id='precedence']/value";
 	private final String SLOT_PAIRS_EXCLUSIVE_XPATH = "/domain/initialstate/variable[@id='exclusive']/value";
 	
 	private final String FILL_SLOT_XML_XPATH = "/domain/model[@trigger='entities']";
 	private final String NLG_SLOT_XML_XPATH = "/domain/model[@trigger='a_m' and @type='nlg']/rule";
-	private final String FILL_TEMPLATE_FNAME = "src/main/resources/xml/oneSlotFillTemplate.xml";
-	private final String NLG_TEMPLATE_FNAME = "src/main/resources/xml/oneSlotNlgTemplate.xml";
-	private final String SETTING_TEMPLATE_FNAME = "src/main/resources/xml/nluSettings.xml";
+	private final String FILL_TEMPLATE_FNAME = "/xml/oneSlotFillTemplate.xml";
+	private final String NLG_TEMPLATE_FNAME = "/xml/oneSlotNlgTemplate.xml";
+	private final String SETTING_TEMPLATE_FNAME = "/xml/nluSettings.xml";
 	private final String NLG_INITIAL_GREETING = "/domain/model[@trigger='a_m' and @type='nlg']/rule/case/effect/set[@type='greeting']/@value";
 
-			
     
 	
 	/**
@@ -276,18 +289,18 @@ public class OpenDialFormXML {
 	{
 		XPath xPath =  XPathFactory.newInstance().newXPath();
 		Node nodeInDoc = (Node) xPath.compile(xpath).evaluate(xmlDocument, XPathConstants.NODE);
-		Node nodeToInsert = (Node) ruleDoc.getDocumentElement();
+		NodeList nodesToInsert = (NodeList) ruleDoc.getDocumentElement().getChildNodes();
 		if(nodeInDoc==null)
 			throw new XPathExpressionException("ERROR:  xpath not found in template " + xpath );
-		if(nodeToInsert==null)
+		if(nodesToInsert==null)
 			throw new XPathExpressionException("ERROR: nodeToInsert is null "  );
 		System.out.println("insertFillOutRules: xpath=" + xpath + " node=" + nodeInDoc.getNodeValue());
-		Node newnode = nodeToInsert.cloneNode(true);
 		
-		    
-		xmlDocument.adoptNode(newnode);
-		nodeInDoc.appendChild(newnode);
-		
+		for (int i=0;i<nodesToInsert.getLength(); i++){
+			Node newnode = nodesToInsert.item(i).cloneNode(true);		    
+			xmlDocument.adoptNode(newnode);
+			nodeInDoc.appendChild(newnode);
+		}
 	}
 	
 	/**
@@ -374,20 +387,38 @@ public class OpenDialFormXML {
 	 * @param fname
 	 * @return
 	 * @throws IOException
+	 * @throws SAXException 
+	 * @throws ParserConfigurationException 
 	 */
-	private String readInFile( String fname) throws IOException
+	private String readInFile( String fname) throws IOException, SAXException, ParserConfigurationException
 	{
-		File file = new File(fname);
-		FileInputStream fis = new FileInputStream(file);
-		byte[] data = new byte[(int) file.length()];
-		fis.read(data);
+	/*	DocumentBuilderFactory builderFactory =
+		        DocumentBuilderFactory.newInstance();
+		DocumentBuilder builder = null;
+		
+		builder = builderFactory.newDocumentBuilder();
+		R
+		
+		Document xmlSettingsDoc = builder.parse(resource.getInputStream());
+		
+		return xmlSettingsDoc;
+		*/
+		Resource resource = new ClassPathResource(fname);
+		InputStream fis = resource.getInputStream();
+		
+		byte[] bytes = new byte[1024];
+		String str = new String();
+		int read;
+        while ((read = fis.read(bytes)) != -1) {
+            str = str.concat(new String(bytes, 0, read));
+        }
 		fis.close();
-	
-		String str = new String(data, "UTF-8");
+
 
 		return str;
-		
+	
 	}
+	
 	
 	/**
 	 * 
@@ -401,22 +432,24 @@ public class OpenDialFormXML {
 	 * @throws XPathExpressionException 
 	 * @throws TransformerException 
 	 */
-	public void fillTemplate(String fin, String fout) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, TransformerException
+	public void fillTemplate(InputStream fin, String fout) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, TransformerException
 	{
 		DocumentBuilderFactory builderFactory =
 		        DocumentBuilderFactory.newInstance();
 		DocumentBuilder builder = null;
 		
 		builder = builderFactory.newDocumentBuilder();
-		Document xmlDocument = builder.parse(new FileInputStream(fin));
-		Document xmlSettingsDoc = builder.parse(new FileInputStream(SETTING_TEMPLATE_FNAME));
+		Document xmlDocument = builder.parse(fin);
+		Resource resource = new ClassPathResource(SETTING_TEMPLATE_FNAME);
+		Document xmlSettingsDoc = builder.parse(resource.getInputStream());
 		
 		System.out.println(this.toString());
 		System.out.println("xml doc=" + xmlDocument);
 	 
 		insertNodeValue(xmlDocument, SLOT_NAMES_ALL_XPATH, getNames() );
 		insertNodeValue(xmlDocument, SLOT_NAMES_OPTIONAL_XPATH, getOptionalNames());
-		insertNodeValue(xmlDocument, SLOT_PAIRS_PRECEDENCE_XPATH, getPrecedencePairs());
+		//insertNodeValue(xmlDocument, SLOT_PAIRS_PRECEDENCE_XPATH, getPrecedencePairs());
+		insertNodeValue(xmlDocument, SLOT_PAIRS_EXCLUSIVE_XPATH, getExclusivePairs());
 		insertNodeValue(xmlDocument, SLOT_PAIRS_EXCLUSIVE_XPATH, getExclusivePairs());
 		
 		insertSettings(xmlDocument, xmlSettingsDoc, NLUtype);
@@ -425,15 +458,18 @@ public class OpenDialFormXML {
 		
 		for(int i = 0; i < fName.length; i++)
 		{
-			String str = readInFile(FILL_TEMPLATE_FNAME ).replaceAll("#_FIELD_NAME_#", fName[i]).replaceAll("#_FIELD_TYPE_#", fType[i]);
+			String str = readInFile(FILL_TEMPLATE_FNAME );
+			str = str.replaceAll("#_FIELD_NAME_#", fName[i]).replaceAll("#_FIELD_TYPE_#", fType[i]);
 			insertFillOutRules(xmlDocument,  builder.parse(new ByteArrayInputStream(str.getBytes())), FILL_SLOT_XML_XPATH);
 		}
 
 		for(int i = 0; i < fName.length; i++)
 		{
-			String str = readInFile(NLG_TEMPLATE_FNAME).replaceAll("#_FIELD_NAME_#", fName[i]).replaceAll("#_FIELD_NLG_#", nlg[i]);
+			String str = readInFile(NLG_TEMPLATE_FNAME);
+			str = str.replaceAll("#_FIELD_NAME_#", fName[i]).replaceAll("#_FIELD_NLG_#", nlg[i]).replaceAll("#_FIELD_CONFIRM_#",implicit[i]);
 			insertFillOutRules(xmlDocument,  builder.parse(new ByteArrayInputStream(str.getBytes())), NLG_SLOT_XML_XPATH);
 		}
+		
 		
 		cleanUpOpenDialForm(xmlDocument);
 		//write the output file

@@ -83,10 +83,10 @@ function createOption($value)
 				$field.style.margin = '0px 40px';
 				$item.appendChild($field);
 	
-				$field = document.createElement('span');
+				/*$field = document.createElement('span');
 				$field.innerHTML = 'Must Follow';
 				$field.style.margin = '0px 10px';
-				$item.appendChild($field);
+				$item.appendChild($field);*/
 
 				$field = document.createElement('span');
 				$field.innerHTML = 'NOT both';
@@ -94,10 +94,14 @@ function createOption($value)
 				$item.appendChild($field);
 				
 				$field = document.createElement('span');
-				$field.innerHTML = 'NL question';
-				$field.style.margin = '3px 10px';
+				$field.innerHTML = 'NL Question';
+				$field.style.margin = '3px 120px';
 				$item.appendChild($field);
 
+				$field = document.createElement('span');
+				$field.innerHTML = 'NL implicit Confirmation';
+				$field.style.margin = '3px 10px';
+				$item.appendChild($field);
 				
 				$container.appendChild($item);
 			}
@@ -177,7 +181,7 @@ function createOption($value)
 				
 
 				//*************must follow constraint (select one of the previous)
-				$field = document.createElement('select');
+				/*$field = document.createElement('select');
 				$field.appendChild(createOption('NONE'));
 				
 				
@@ -192,7 +196,7 @@ function createOption($value)
 				$field.type = 'text';
 				$field.style.width = '60px';
 				$field.style.marginRight = '10px';					
-				$item.appendChild($field);
+				$item.appendChild($field);*/
 				
 				//**************** mutually exclusive constraint
 				$field = document.createElement('select');
@@ -206,19 +210,12 @@ function createOption($value)
 				$option.value = $option.textContent =  'NONE';
 				$field.appendChild($option);
 				
-				/*all except this index goes into options
-				for ($oIndex = 0; $oIndex < $i; $oIndex++) {
-					if ($oIndex!=$i)
-					{
-						$field.appendChild(createOption($oIndex.toString()));						
-					}
-				}*/
 				
 				$field.name = 'mutuallyExclusive[' + $i + ']';
 				$field.id = 'mutuallyExclusive'+$i;
 				$field.index = $i;
 				$field.type = 'text';
-				$field.style.width = '60px';
+				$field.style.width = '80px';
 				$field.style.marginRight = '10px';					
 				$item.appendChild($field);
 
@@ -237,6 +234,22 @@ function createOption($value)
 							    }
 					  );
 				$item.appendChild($field);
+				
+				//**************NL confirm
+				$field = document.createElement('input');
+				$field.name = 'implicit[' + $i + ']';
+				$field.id = 'implicit'+$i;
+				$field.type = 'text';
+				$field.style.width = '300px';
+				$field.style.marginRight = '10px';		
+				$field.addEventListener(
+					     'change',
+						 function(){				  
+								this.modified = true;				 
+							    $("#Message").text("confirm question");	
+							    }
+					  );
+				$item.appendChild($field);				
 			
 				return $item;
 
@@ -274,8 +287,6 @@ function createOption($value)
 			function checkMutualExclusive(evt)
 			{
 				var $indexOther = getNamesList().indexOf(evt.target.value);
-				//var $control = #("#mutuallyExclusive["+ +"]")
-				//alert(evt.target.index + " has changed to " + evt.target.value);
 				var $control = document.getElementById("mutuallyExclusive"+$indexOther+"");
 				if($control!=null)
 				{
@@ -292,7 +303,7 @@ function createOption($value)
 			 function updateConstraintsFields()
 			 {
 				 updatefField("mutuallyExclusive");
-				 updatefField("mustFollow");
+				 //updatefField("mustFollow");
 			 }
 			 
 			 function updatefField($fname)
@@ -378,13 +389,14 @@ function createOption($value)
 		    	 BuildTableHeader();
 		    	$("#NLUtype").val("CUROhotels");
 		    	resetType();
-		        AddFormFields(4);
-		        $("#fName0").val("location"); $("#fType0").val("GPE");$("#nlg0").val("Which city?");
-		        $("#fName1").val("startdate"); $("#fType1").val("CI");$("#nlg1").val("When are you arriving?");
-		        $("#fName2").val("duration"); $("#fType2").val("NN");$("#nlg2").val("How long do you plan to stay?");
-		        $("#fName3").val("enddate");  $("#fType3").val("CO");$("#nlg3").val("When do you plan to leave?");
+		        AddFormFields(4);		        
+		        $("#greeting").val("Welcome to hotel reservation! When and where do you need a hotel. You can restart the interaction at any time by saying 'restart'.")
+		        $("#fName0").val("location"); $("#fType0").val("GPE");$("#nlg0").val("Which city?"); $("#implicit0").val("the hotel in {location}");
+		        $("#fName1").val("arrival"); $("#fType1").val("CI");$("#nlg1").val("When are you arriving to {location}?"); $("#implicit1").val("arriving on {arrival}");
+		        $("#fName2").val("duration"); $("#fType2").val("NN");$("#nlg2").val("How long do you plan to stay in {location}?");  $("#implicit2").val("staying for {duration}");
+		        $("#fName3").val("departure");  $("#fType3").val("CO");$("#nlg3").val("When do you plan to leave?"); $("#implicit3").val("staying until {departure}");
 		        updateConstraintsFields();
-		        $("#mutuallyExclusive2").val("enddate");
+		        $("#mutuallyExclusive2").val("departure");
 		        $("#mutuallyExclusive3").val("duration");
 
 		     }

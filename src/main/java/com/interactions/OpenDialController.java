@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
@@ -41,7 +42,9 @@ public class OpenDialController {
     public ResponseEntity<FileSystemResource> generateDialogSubmit(@ModelAttribute OpenDialFormXML f , Model model) throws Exception {
         System.out.println("Generating dialog for field names " + f.toString());
         String outFname = "openDialXml/test.xml";
-        f.fillTemplate("src/main/resources/xml/formFillingTemplate2.xml", outFname);
+        System.out.println("In genDialog Conroller SS");
+        Resource resource = new ClassPathResource("xml/formFillingTemplate.xml");
+        f.fillTemplate(resource.getInputStream(), outFname);
         
         //serialize the form
         //Gson gson = new Gson();

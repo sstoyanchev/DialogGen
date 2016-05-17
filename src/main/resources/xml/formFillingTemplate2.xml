@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<domain>
+
+	<!-- Initial state of the interaction -->
+	<initialstate>
+	 
+		<!-- Starts the dialogue with the system prompt -->
+		<variable id="a_m">
+			<value>Start</value>
+		</variable>
+
+		<!-- complete list of slots to fill -->
+		<variable id="Slots">
+		  <value>Place list of slot names here</value>
+		</variable>
+		
+		<!-- List of optional slots (that may be left unfilled) -->
+		<variable id="optional">
+		   <value prob="1">Place optional slot names here</value>
+		</variable>
+
+		<!-- List of precedence relations between slots -->
+		<variable id="precedence">
+		  <value> Place precedence pairs here</value>
+		</variable>
+		
+		<!-- List of mutually exclusive slots -->
+		<variable id="exclusive">
+		  <value>Place exclusive pairs here</value>
+		</variable>
+		 
+	</initialstate>
+
+
+	<!-- Fills the form slots according to the values produced by the 
+		statistical NLU engine -->
+	<model trigger="entities">
+		
+	        <!--Fill in rules go here -->
+	  
+		<!-- Accumulates evidence about the slot values -->
+		<rule priority="2">
+			<case>
+				<condition>
+					<if var="Slot" relation="in" value="{Slots}" />
+					<if var="grounded" relation="!contains" value="{Slot}"/>
+					<if var="{Slot}" relation="=" value="{SlotValue}" />
+				</condition>
+				<effect prob="1">
+					<set var="{Slot}" value="{SlotValue}" />
+				</effect>
+			</case>
+		</rule>
+	
+		<!-- Handles the user responses following a clarification question -->
+		<rule>
+			<case>
+				<condition>
+					<if var="a_m" relation="=" value="AskConfirm({Slot},{SlotValue})" />
+					<if var="u_u" relation="contains" value="(yes|correct|exactly)" />
+				</condition>
+				<effect prob="1">
+					<set var="{Slot}" value="{SlotValue}" />
+					<set var="a_u" value="FillSlot({Slot})" exclusive="false"/>
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" relation="=" value="AskConfirm({Slot},{SlotValue})" />
+					<if var="u_u" relation="contains" value="no" />
+				</condition>
+				<effect prob="1">
+					<set var="{Slot}" value="None" />
+				</effect>
+			</case>
+		</rule>
+		
+		
+		<!-- Additional dialogue acts such as skipping an optional slot,
+			restarting the interaction or uttering something out-of-coverage -->
+		<rule>
+			<case>
+				<condition>
+					<if var="u_u" relation="contains" value="skip"/>
+					<if var="FocusSlot" relation="=" value="{Slot}"/>
+				</condition>
+				<effect>
+					<set var="a_u" value="Skip({Slot})" exclusive="false"/>
+				</effect>
+			</case>	
+			<case>
+				<condition>
+					<if var="u_u" relation="contains" value="restart"/>
+				</condition>
+				<effect>
+					<set var="a_u" value="Restart" exclusive="false"/>
+				</effect>
+			</case>	
+			<case>
+				<condition>
+					<if var="u_u" relation="!=" value="None"/>
+					<if var="u_u" relation="!contains" value="(yes|correct|exactly|no)"/>
+					<if var="entities" value="None" />
+				</condition>
+				<effect>
+					<set var="a_u" value="Other" exclusive="false"/>
+				</effect>
+			</case>
+		</rule>
+	
+		
+		<!-- Dummy rule to trigger the update of 'a_u' -->
+		<rule priority="2">
+			<case>
+				<effect>
+					<set var="a_u" value="[]"/>	
+				</effect>
+			</case>
+		</rule>
+	
+		
+	</model>
+
+ 
+	<!-- Action selection model (essentially grounding or clarify the slots?) -->
+	<model trigger="a_u">
+
+
+		<!-- Relative utilities for grounding vs . requesting a confirmation for a slot -->
+		<rule>
+			<case>
+				<condition>
+					<if var="a_u" relation="contains" value="FillSlot({Slot})" />
+					<if var="{Slot}" relation="=" value="{SlotValue}"/>
+					<if var="SlotValue" relation="!=" value="None" />
+				</condition>
+				<effect util="2">
+					<set var="a_m" value="Ground({Slot},{SlotValue})" />
+				</effect>
+				<effect util="1">
+					<set var="a_m" value="AskConfirm({Slot},{SlotValue})" />
+				</effect>
+			</case>
+			<case>
+				<condition> 
+					<if var="SlotValue" relation="!=" value="None" />
+				</condition>
+				<effect util="-2">
+					<set var="a_m" value="Ground({Slot},{SlotValue})" />
+				</effect>
+				<effect util="-0.3">
+					<set var="a_m" value="AskConfirm({Slot},{SlotValue})" />
+				</effect>			
+			</case>
+		</rule>
+		
+		<!-- Utilities for additional actions, such as skipping an optional slot,
+			restarting the interaction or stating that the utterance was not understood -->
+		<rule>
+			<case>
+				<condition>
+					<if var="a_u" relation="contains" value="Skip({Slot})"/>
+					<if var="optional" relation="contains" value="{Slot}"/>
+				</condition>
+				<effect util="1">
+					<set var="a_m" value="Skip({Slot})"/>
+				</effect>
+			</case>	
+			<case>
+				<condition>
+					<if var="a_u" relation="contains" value="Restart"/>
+				</condition>
+				<effect util="1.0">
+					<set var="a_m" value="Start" />
+				</effect>
+			</case>	
+			<case>
+				<condition>
+					<if var="a_u" relation="contains" value="Other"/>
+				</condition>
+				<effect util="0.5">
+					<set var="a_m" value="AskRepeat" />
+				</effect>
+			</case>
+			<case>
+				<effect util="-1">
+					<set var="a_m" value="Start"/>
+				</effect>
+				<effect util="-1">
+					<set var="a_m" value="Skip(*)"/>
+				</effect>
+				<effect util="-0.2">
+					<set var="a_m" value="AskRepeat" />
+				</effect>
+			</case>
+		</rule>
+		
+	</model>
+	
+	
+	<!-- Transition model (following a new system action). -->
+	<model trigger="a_m">
+		
+		<!-- Adds the grounded/skipped value to the 'grounded' variable -->
+		<rule>
+			<case>
+				<condition>
+					<if var="a_m" relation="=" value="Ground({Slot},*)" />
+				</condition>
+				<effect prob="1">
+					<set var="grounded" value="{grounded}+{Slot}"/>
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" relation="=" value="Skip({Slot})"/>
+				</condition>
+				<effect prob="1">
+					<set var="grounded" value="{grounded}+{Slot}"/>
+				</effect>
+			</case>
+		</rule>
+
+		<!-- If the user dialogue act has more than one element, executes 
+		 	the action selection model again (to e.g. ground another slot) -->
+		<rule>
+			<case>
+				<condition>
+					<if var="a_m" relation="=" value="Ground({Slot},*)" />
+					<not><if var="a_u" relation="length" value="1"/></not>
+				</condition>
+				<effect prob="1">
+					<set var="a_u" value="{a_u}-FillSlot({Slot})"/>
+				</effect>
+			</case>
+		</rule>	
+		
+			
+		<!-- Initialises the slots and the 'grounded' variable when (re)starting the dialogue -->
+		<rule> 
+			<case>
+				<condition>
+					<if var="a_m" relation="=" value="Start"/>
+					<if var="Slot" relation="in" value="{Slots}"/>
+				</condition>
+				<effect>
+					<set var="{Slot}" value="None"/>
+					<set var="grounded" value="[]"/>
+				</effect>
+			</case>
+		</rule>
+		
+		<!-- Enables the slots that are not dependent on a preceding slot -->
+		<rule> 
+			<case>
+				<condition>
+					<if var="a_m" relation="=" value="Start"/>
+					<if var="Slot" relation="in" value="{Slots}"/>
+					<if var="precedence" relation="!contains" value="(*,{Slot})"/>
+				</condition>
+				<effect>
+					<set var="enabled" value="{Slot}" exclusive="false"/>
+				</effect>
+			</case>
+		</rule>
+		
+		<!-- Write the current slot 'in focus' in a variable FocusSlot -->
+		<rule>
+			<case>
+				<condition operator="or">
+					<if var="a_m" relation="=" value="Ask({Slot})"/>	
+					<if var="a_m" relation="=" value="AskConfirm({Slot},*)"/>	
+				</condition>
+				<effect prob="1">
+					<set var="FocusSlot" value="{Slot}"/>
+				</effect>
+			</case>
+		</rule>
+		
+		<!-- Updates the enabled slots if a precedence relation is fullfilled -->
+		<rule>
+			<case>
+				<condition>
+					<if var="precedence" relation="contains" value="({Slot1},{Slot2})"/>
+					<if var="a_m" relation="=" value="(Ground|Skip)({Slot1}*"/>
+					<if var="enabled" relation="!contains" value="{Slot2}"/>
+				</condition>
+				<effect prob="1">
+					<set var="enabled" value="{enabled}+{Slot2}" exclusive="false" />
+				</effect>
+			</case>
+		</rule>
+		
+		<!-- Updates the grounded slots in case of mutual exclusivity between two slots -->
+		<rule>
+			<case>
+				<condition>
+					<if var="exclusive" relation="contains" value="({Slot1},{Slot2})"/>
+					<if var="a_m" relation="=" value="(Ground|Skip)(({Slot1}|{Slot2})*"/>
+				</condition>
+				<effect prob="1">
+					<set var="grounded" value="{grounded}+{Slot1}+{Slot2}" exclusive="false"/>
+				</effect>
+			</case>
+		</rule>
+		
+	</model> 
+	
+	
+	<!-- If a new slot is grounded, asks a new question, or present the results -->
+	<model trigger="grounded">
+
+		<rule id="nextquestion">
+		        <case>
+				<condition>
+					<if var="a_m" relation="!=" value="Start"/>
+					<if relation="in" value="{Slots}" var="Slot"/>
+					<if relation="!contains" value="{Slot}" var="grounded"/>
+					<if relation="contains" value="{Slot}" var="enabled"/>
+				</condition>
+				<effect util="0.1">
+					<set value="Ask({Slot})" var="a_m"/>
+				</effect>
+			</case>			<case>
+			  <condition>
+			                <if var="Slots" relation="=" value="[{Slot}*]"/>
+					<if var="Slot" relation="in" value="{Slots}" />
+					<if var="grounded" relation="!contains" value="{Slot}"/>
+					<if var="enabled" relation="contains" value="{Slot}"/>
+				</condition>
+				<effect util="0.1">
+					<set var="a_m" value="Ask({Slot})" />
+				</effect>
+			</case>
+		</rule> 
+	
+		<rule>
+			<case>
+				<!--If everything is grounded, return control to caller-->
+				<condition>
+					<if var="grounded" relation="=" value="{Slots}" />
+				</condition>
+				<effect util="1">
+					<set var="a_m" value="EndDialogue" />
+				</effect>
+			</case>
+	
+		</rule>
+	</model>
+	
+	
+	<!-- Generation model from system actions to the raw utterances -->
+	<model trigger="a_m" type="nlg">
+
+		<rule>
+			<case>
+				<condition>
+					<if var="a_m" relation="=" value="Start"/>
+				</condition>
+				<effect util="1">
+					<set var="u_m" type="greeting" value="Welcome! Please provide the values. You can restart the interaction at any time by saying 'restart'." />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" value="Ground({Slot},{SlotValue})" />	
+					<if var="u_m" relation="!=" value="OK,*"/>
+				</condition>
+				<effect util="1">
+					<set var="u_m" value="OK, the {Slot} is {SlotValue}." />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" value="Ground({Slot},{SlotValue})" />	
+				</condition>
+				<effect util="1">
+					<set var="u_m" value="and the {Slot} is {SlotValue}." />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" relation="=" value="AskConfirm({Slot},{SlotValue})" />
+				</condition>
+				<effect util="1">
+					<set var="u_m"
+						value="I think you said that the {Slot} is {SlotValue}. Is that correct?" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" relation="=" value="AskRepeat" />
+					<if var="u_m" relation="contains" value="repeat?"/>
+				</condition>
+				<effect util="1">
+					<set var="u_m" value="I'm sorry, I did not understand that." />
+					<set var="a_m" value="Ask({FocusSlot})"/>
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" relation="=" value="AskRepeat" />
+				</condition>
+				<effect util="1">
+					<set var="u_m" value="I am not sure what you just said. Could you repeat?" />
+				</effect>
+			</case>
+			<case>
+				<condition>
+					<if var="a_m" relation="=" value="EndDialogue" />	
+				</condition>
+				<effect util="1">
+					<set var="u_m" value="Thank you for your input!" />
+				</effect>
+			</case>
+		</rule>	
+
+	</model>
+	
+
+</domain>

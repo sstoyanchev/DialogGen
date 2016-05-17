@@ -1,0 +1,38 @@
+                 <rule>
+                 <!--This rule is generated from a template oneSlotFillTemplate.xml: slot='#_FIELD_NAME_#' type='#_FIELD_TYPE_#' -->
+			<case>
+				<!-- First case: the '#_FIELD_NAME_#' slot is in focus and a value is provided -->
+				<condition> <if var="entities" relation="contains" value="({Entity},#_FIELD_TYPE_#)" />
+					<if var="FocusSlot" relation="=" value="#_FIELD_NAME_#" />					
+				</condition>
+				<effect prob="1">
+					<set var="a_u" value="FillSlot(#_FIELD_NAME_#)" exclusive="false"/>
+					<set var="#_FIELD_NAME_#" value="{Entity}" />
+				</effect>
+			</case>
+			<case>
+				<!-- Second case: the '#_FIELD_NAME_#' is not in focus but is not yet grounded -->
+				<condition>
+					<if var="entities" relation="contains" value="({Entity},#_FIELD_TYPE_#)" />
+					<if var="grounded" relation="!contains" value="#_FIELD_NAME_#" />	
+					<if var="enabled" relation="contains" value="#_FIELD_NAME_#"/>
+				</condition>
+				<effect prob="0.8">
+					<set var="a_u" value="FillSlot(#_FIELD_NAME_#)" exclusive="false"/>
+					<set var="#_FIELD_NAME_#" value="{Entity}" />
+				</effect>
+			</case>
+			<case>
+				<!-- Third case, the '#_FIELD_NAME_#' has been grounded, but the user wishes to cancel it -->
+				<condition>
+					<if var="entities" relation="contains" value="({Entity},#_FIELD_TYPE_#)" />
+					<if var="u_u" relation="contains" value="no" />		
+					<if var="enabled" relation="contains" value="#_FIELD_NAME_#"/>
+				</condition>
+				<effect prob="0.7">
+					<set var="a_u" value="FillSlot(#_FIELD_NAME_#)" exclusive="false"/>
+					<set var="#_FIELD_NAME_#" value="{Entity}" />
+				</effect>
+			</case>
+		</rule>
+		

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Bootstrap 101 Template</title>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>    
+    <script type="text/javascript" src="myjs/buildform.js"></script>      		
+  </head>
+  <body>
+    <h1>Welcome to dialog generator!</h1>
+   <!--   <p th:text="'Hello, ' + ${formJson} + '!'" />  
+     <p id="Message"> </p>-->
+     <script th:inline="javascript">
+     	/*<![CDATA[*/
+           var formJson = /*[[${formJson}]]*/ '';
+        /*]]>*/
+     	console.log(formJson);
+     </script>  
+     <br />
+    
+    <input type="button" value="Reset Form" onclick="resetForm();" />
+	 <input type="button" value="Load Hotels Example" onclick="initializeHotelsExample();" />
+	 <div>
+	 <br /> 
+     <p th:text="'Please enter form information below:'" />
+     
+     <!--  <form action="/genDialog"  method="post"> -->
+     <form action="#" th:action="@{/genDialog}" th:object="${OpenDialFormXML}" method="post">     
+            
+	     <div>
+	     <p> Please select NLU type:
+	         <select name="NLUtype" id="NLUtype" >
+			    <option value="LUISgeneric">Luis Generic</option>
+			    <option value="LUIScalendar">Luis calendar; new event</option>
+			    <option value="CUROhotels">Curo Hotels </option>
+			</select> 
+		 	<script>
+			$("#NLUtype").on('change', function() {
+				  if (true==confirm( "Click OK to change NLU type to " + this.value + "This will reset your Types" ))
+				  {
+				     resetType(this.value);
+				     $("#Message").text("haha");
+				  }
+				})
+			</script>
+			</p>
+		 </div>			
+		 
+		 <div> Initial greeting: <input type="text" name="greeting" value="Welcome! Please specify fields. You can restart the interaction at any time by saying 'restart'." size="100"/> <br/> </div>
+		<div> 
+		<div id="FormFields" style="margin: 20px 0px;">
+			
+		</div>
+		<input type="button" value="Add Field" onclick="AddFormFields(1);" />	
+		<script>
+		    if (formJson ==null)
+		    {
+		    	BuildTableHeader();		    
+		    	AddFormFields(2);
+		    	resetType();
+		    }
+		    else
+		    {
+		        initializeHotelsExample();
+		    }
+		</script>  
+		</div>  
+		<br />
+		<input type="submit" value="Submit" /> 
+		
+
+    </form>
+    
+	</div>
+ 
+  </body>
+</html>

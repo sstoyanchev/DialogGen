@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head> 
+    <title>Getting Started: Serving Web Content</title> 
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+    <h1>Form-based dialog generation</h1>
+    <ol>
+    <li>Download and unzip <a href="/downloadOpendial">Opendial system</a>.<br/> 
+     You will need <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">java 8 jdk</a> to run it.<br />
+     Make sure your JAVA_HOME environment variable points to java 8 (e.g./Library/Java/JavaVirtualMachines/jdk1.8.0_45.jdk/Contents/Home)</li>
+    <li>Run it with: <br />
+    cd opendial <br /> 
+    scripts/opendial (text only); <br />
+    scripts/opendialWithspeech (with speech)</li>
+    <li>Open the web <a href="/opendialform">web interface </a> and click on "Load Hotel Example"</li>
+    <li>Review the form and click 'submit' (downloads opendial.xml) </li>
+    <li>In the Opendial window, click Domain | openfile and choose the downloaded opendial.xml </li>
+    <li>Try filling out the form using dialog (the system is user-driven and fields can be filled in a single or in multiple utterances and in any order). 
+    <br />
+    If the dialog is stuck you can click on Interaction | Reset. <br />
+    Please keep track of the number of dialog paths you attempt and the number that are successful. <br />
+    A successful form completion results in filled-in form window displayed.
+    </li>
+    <ul> 
+    <li> Try filling out the form by specifying all fields in a single utterance. </li>
+    <li> Try filling the form by specifying one field at a time. </li>
+    <li> Please try three other dialog paths for filling out the form.</li>
+    </ul>
+    <li>Reset the <a href="/opendialform">form</a> and try filling out other examples (e.g. use Luis interface, add fields, change questions)</li>
+    <li>Proceed to <a href="https://www.surveymonkey.com/r/HFF77CX">questionnaire</a></li>
+    </ol>
+</body>
+</html>

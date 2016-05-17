@@ -1,0 +1,17 @@
+<nlu>
+<settings id="LUIScalendar">
+		<modules>opendial.plugins.NLULuis,opendial.plugins.FormDisplay</modules>
+		<key_luis>ee81a5dae9cd44ebbfb8a682acbacd0a</key_luis>
+		<model_luis>413b2ef-382c-45bd-8ff0-f76d60e2a821</model_luis>
+</settings>
+<settings id="LUISgeneric">
+		<modules>opendial.plugins.NLULuis,opendial.plugins.FormDisplay</modules>
+		<key_luis>ee81a5dae9cd44ebbfb8a682acbacd0a</key_luis>
+		<model_luis>fb1cb71a-07c4-4f8b-bb0a-61369e90f4ec</model_luis>
+</settings>
+ <settings id="CUROhotels">
+                <modules>opendial.plugins.NLUWatson,opendial.plugins.FormDisplay</modules>
+                <model_watson>nlp-next-hotel/understandHotel</model_watson>
+        </settings> 
+</nlu>
+

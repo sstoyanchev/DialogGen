@@ -1,0 +1,10 @@
+<case>
+  <!--This case is generated from a template oneSlotNlgTemplate.xml for slot='#_FIELD_NAME_#' -->
+				<condition>
+					<if var="a_m" relation="=" value="Ask(#_FIELD_NAME_#)" />
+				</condition> 
+				<effect util="1">
+					<set var="u_m" value="#_FIELD_NLG_#" />
+				</effect>
+  </case>
+  

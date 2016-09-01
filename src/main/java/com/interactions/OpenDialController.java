@@ -40,9 +40,8 @@ public class OpenDialController {
     @RequestMapping(value="/genDialog", method = RequestMethod.POST)
     @ResponseBody 
     public ResponseEntity<FileSystemResource> generateDialogSubmit(@ModelAttribute OpenDialFormXML f , Model model) throws Exception {
-        System.out.println("Generating dialog for field names " + f.toString());
-        String outFname = "openDialXml/test.xml";
-        System.out.println("In genDialog Conroller SS");
+        String outFname = "openDialXml/test" + System.currentTimeMillis() % 100000 + ".xml";
+        System.out.println("Generating dialog for field names " + f.toString() + "; Output file: " + outFname);
         Resource resource = new ClassPathResource("xml/formFillingTemplate.xml");
         f.fillTemplate(resource.getInputStream(), outFname);
         
@@ -51,8 +50,7 @@ public class OpenDialController {
         //String json = gson.toJson(f);
         //System.out.println("json: " + json);
 
-        System.out.println("Created file " + outFname);
-        File file = new File ("openDialXml/test.xml") ;
+        File file = new File (outFname) ;
         return ResponseEntity.ok()
         		.header("Content-Disposition", "attachment; filename=opendial.xml")
         		.body(new FileSystemResource(file)); 
@@ -62,7 +60,7 @@ public class OpenDialController {
     @ResponseBody 
     public ResponseEntity<FileSystemResource> downloadOpendial() throws Exception {
 
-        File file = new File ("openDialXml/opendialFormFilling.tar.gz") ;
+        File file = new File ("openDialSoft/opendialFormFilling.tar.gz") ;
         return ResponseEntity.ok()
         		.header("Content-Disposition", "attachment; filename=opendialFormFilling.tar.gz")
         		.body(new FileSystemResource(file)); 

@@ -118,10 +118,10 @@
 		
 		
 			<rule>
-  <!--This rule is generated from a template oneSlotFillTemplate.xml: slot='location' type='GPE' -->
+  <!--This rule is generated from a template oneSlotFillTemplate.xml: slot='location' type='builtin.geography.city' -->
 			<case>
 				<!-- First case: the 'location' slot is in focus and a value is provided -->
-				<condition> <if relation="contains" value="({Entity},GPE)" var="entities"/>
+				<condition> <if relation="contains" value="({Entity},builtin.geography.city)" var="entities"/>
 					<if relation="=" value="location" var="FocusSlot"/>					
 				</condition>
 				<effect prob="1">
@@ -132,7 +132,7 @@
 			<case>
 				<!-- Second case: the 'location' is not in focus but is not yet grounded -->
 				<condition>
-					<if relation="contains" value="({Entity},GPE)" var="entities"/>
+					<if relation="contains" value="({Entity},builtin.geography.city)" var="entities"/>
 					<if relation="!contains" value="location" var="grounded"/>	
 				</condition>
 				<effect prob="0.9">
@@ -143,7 +143,7 @@
 			<case>
 				<!-- Third case, the 'location' has been grounded, but the user wishes to cancel it -->
 				<condition>
-					<if relation="contains" value="({Entity},GPE)" var="entities"/>
+					<if relation="contains" value="({Entity},builtin.geography.city)" var="entities"/>
 					<if relation="contains" value="no" var="u_u"/>		
 				</condition>
 				<effect prob="0.7">
@@ -154,10 +154,10 @@
 		</rule>
 
 			<rule>
-  <!--This rule is generated from a template oneSlotFillTemplate.xml: slot='arrival' type='CI' -->
+  <!--This rule is generated from a template oneSlotFillTemplate.xml: slot='arrival' type='builtin.datetime.date' -->
 			<case>
 				<!-- First case: the 'arrival' slot is in focus and a value is provided -->
-				<condition> <if relation="contains" value="({Entity},CI)" var="entities"/>
+				<condition> <if relation="contains" value="({Entity},builtin.datetime.date)" var="entities"/>
 					<if relation="=" value="arrival" var="FocusSlot"/>					
 				</condition>
 				<effect prob="1">
@@ -168,7 +168,7 @@
 			<case>
 				<!-- Second case: the 'arrival' is not in focus but is not yet grounded -->
 				<condition>
-					<if relation="contains" value="({Entity},CI)" var="entities"/>
+					<if relation="contains" value="({Entity},builtin.datetime.date)" var="entities"/>
 					<if relation="!contains" value="arrival" var="grounded"/>	
 				</condition>
 				<effect prob="0.9">
@@ -179,7 +179,7 @@
 			<case>
 				<!-- Third case, the 'arrival' has been grounded, but the user wishes to cancel it -->
 				<condition>
-					<if relation="contains" value="({Entity},CI)" var="entities"/>
+					<if relation="contains" value="({Entity},builtin.datetime.date)" var="entities"/>
 					<if relation="contains" value="no" var="u_u"/>		
 				</condition>
 				<effect prob="0.7">
@@ -190,10 +190,10 @@
 		</rule>
 
 			<rule>
-  <!--This rule is generated from a template oneSlotFillTemplate.xml: slot='duration' type='NN' -->
+  <!--This rule is generated from a template oneSlotFillTemplate.xml: slot='duration' type='builtin.datetime.duration' -->
 			<case>
 				<!-- First case: the 'duration' slot is in focus and a value is provided -->
-				<condition> <if relation="contains" value="({Entity},NN)" var="entities"/>
+				<condition> <if relation="contains" value="({Entity},builtin.datetime.duration)" var="entities"/>
 					<if relation="=" value="duration" var="FocusSlot"/>					
 				</condition>
 				<effect prob="1">
@@ -204,7 +204,7 @@
 			<case>
 				<!-- Second case: the 'duration' is not in focus but is not yet grounded -->
 				<condition>
-					<if relation="contains" value="({Entity},NN)" var="entities"/>
+					<if relation="contains" value="({Entity},builtin.datetime.duration)" var="entities"/>
 					<if relation="!contains" value="duration" var="grounded"/>	
 				</condition>
 				<effect prob="0.9">
@@ -215,7 +215,7 @@
 			<case>
 				<!-- Third case, the 'duration' has been grounded, but the user wishes to cancel it -->
 				<condition>
-					<if relation="contains" value="({Entity},NN)" var="entities"/>
+					<if relation="contains" value="({Entity},builtin.datetime.duration)" var="entities"/>
 					<if relation="contains" value="no" var="u_u"/>		
 				</condition>
 				<effect prob="0.7">
@@ -226,10 +226,10 @@
 		</rule>
 
 			<rule>
-  <!--This rule is generated from a template oneSlotFillTemplate.xml: slot='departure' type='CO' -->
+  <!--This rule is generated from a template oneSlotFillTemplate.xml: slot='departure' type='builtin.datetime.date' -->
 			<case>
 				<!-- First case: the 'departure' slot is in focus and a value is provided -->
-				<condition> <if relation="contains" value="({Entity},CO)" var="entities"/>
+				<condition> <if relation="contains" value="({Entity},builtin.datetime.date)" var="entities"/>
 					<if relation="=" value="departure" var="FocusSlot"/>					
 				</condition>
 				<effect prob="1">
@@ -240,7 +240,7 @@
 			<case>
 				<!-- Second case: the 'departure' is not in focus but is not yet grounded -->
 				<condition>
-					<if relation="contains" value="({Entity},CO)" var="entities"/>
+					<if relation="contains" value="({Entity},builtin.datetime.date)" var="entities"/>
 					<if relation="!contains" value="departure" var="grounded"/>	
 				</condition>
 				<effect prob="0.9">
@@ -251,7 +251,7 @@
 			<case>
 				<!-- Third case, the 'departure' has been grounded, but the user wishes to cancel it -->
 				<condition>
-					<if relation="contains" value="({Entity},CO)" var="entities"/>
+					<if relation="contains" value="({Entity},builtin.datetime.date)" var="entities"/>
 					<if relation="contains" value="no" var="u_u"/>		
 				</condition>
 				<effect prob="0.7">
@@ -480,7 +480,7 @@
 					<if relation="=" value="Start" var="a_m"/>
 				</condition>
 				<effect util="1">
-					<set value="Welcome to hotel reservation! When and where do you need a hotel. You can restart the interaction at any time by saying 'restart'." var="u_m"/>
+					<set value="Welcome to hotel reservation with Luis! When and where do you need a hotel. You can restart the interaction at any time by saying 'restart'." var="u_m"/>
 				</effect>
 			</case>
 
@@ -644,7 +644,8 @@
 	</model>
 	
 
-<settings id="CUROhotels">
-                <modules>opendial.plugins.NLUWatson,opendial.plugins.FormDisplay</modules>
-                <model_watson>nlp-next-hotel/understandHotel</model_watson>
-        </settings></domain>
+<settings id="LUISgeneric">
+		<modules>opendial.plugins.NLULuis,opendial.plugins.FormDisplay</modules>
+		<key_luis>ee81a5dae9cd44ebbfb8a682acbacd0a</key_luis>
+		<model_luis>fb1cb71a-07c4-4f8b-bb0a-61369e90f4ec</model_luis>
+</settings></domain>

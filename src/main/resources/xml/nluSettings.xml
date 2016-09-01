@@ -2,7 +2,7 @@
 <settings id="LUIScalendar">
 		<modules>opendial.plugins.NLULuis,opendial.plugins.FormDisplay</modules>
 		<key_luis>ee81a5dae9cd44ebbfb8a682acbacd0a</key_luis>
-		<model_luis>413b2ef-382c-45bd-8ff0-f76d60e2a821</model_luis>
+		<model_luis>c413b2ef-382c-45bd-8ff0-f76d60e2a821</model_luis>
 </settings>
 <settings id="LUISgeneric">
 		<modules>opendial.plugins.NLULuis,opendial.plugins.FormDisplay</modules>

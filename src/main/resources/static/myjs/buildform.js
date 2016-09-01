@@ -1,3 +1,6 @@
+
+//TODO: load the options dynamically
+
 var typesLuisCalendar = [ "",
                           "builtin.calendar.start_time",
                           "builtin.calendar.end_time",
@@ -9,20 +12,25 @@ var typesLuisCalendar = [ "",
                           "builtin.calendar.duration",
                           "builtin.calendar.title"];
 
-var typesLuisGenericSubset = [ "",//"builtin.encyclopedia.people.*",
-                          //"builtin.datetime.date",
-                          //"builtin.datetime.time",
+var typesLuisGenericSubset = [ "",
+                          "builtin.datetime.date",
+                          "builtin.datetime.time",
+                          "builtin.datetime.duration",
                           "builtin.datetime*",
-                          //"builtin.geography.city",
-                          //"builtin.geography.country",
+                          "builtin.geography.city",
+                          "builtin.geography.country",
                           //"builtin.geography.pointOfInterest",
                           "builtin.geography*",
+                          "builtin.encyclopedia.people*",
+                          "builtin.encyclopedia.organization*",
                           "builtin.encyclopedia*"];
 
 var typesCuroHotels = [ "", "GPE","CI","CO","NN"];
 
 
-var nluOptions = {"LUIScalendar" : typesLuisCalendar, "LUISgeneric" : typesLuisGenericSubset, "CUROhotels": typesCuroHotels}
+//var nluOptions = {"LUIScalendar" : typesLuisCalendar, "LUISgeneric" : typesLuisGenericSubset, "CUROhotels": typesCuroHotels}
+var nluOptions = {"LUISgeneric" : typesLuisGenericSubset, "CUROhotels": typesCuroHotels}
+
 
 /**
  * 

@@ -12,6 +12,11 @@ var typesLuisCalendar = [ "",
                           "builtin.calendar.duration",
                           "builtin.calendar.title"];
 
+var typesLuisMortgage = [ "",
+                          "builtin.percentage",
+                          "builtin.money",
+                          "ZipCode"];
+
 var typesLuisGenericSubset = [ "",
                           "builtin.datetime.date",
                           "builtin.datetime.time",
@@ -29,7 +34,7 @@ var typesCuroHotels = [ "", "GPE","CI","CO","NN"];
 
 
 //var nluOptions = {"LUIScalendar" : typesLuisCalendar, "LUISgeneric" : typesLuisGenericSubset, "CUROhotels": typesCuroHotels}
-var nluOptions = {"LUISgeneric" : typesLuisGenericSubset, "CUROhotels": typesCuroHotels}
+var nluOptions = {"LuisMortgage": typesLuisMortgage, "LUISgeneric" : typesLuisGenericSubset, "CUROhotels": typesCuroHotels}
 
 
 /**
@@ -406,6 +411,21 @@ function createOption($value)
 		        updateConstraintsFields();
 		        $("#mutuallyExclusive2").val("departure");
 		        $("#mutuallyExclusive3").val("duration");
+
+		     }
+		     
+		     function initializeMortgageExample1()
+		     {
+		    	 $("#FormFields").html("");
+		    	 BuildTableHeader();
+		    	$("#NLUtype").val("LuisMortgage");
+		    	resetType();
+		        AddFormFields(3);		        
+		        $("#greeting").val("Welcome to mortgage calculator. Please specify price, downpaymet, and zipcode. You can restart the interaction at any time by saying 'restart'.")
+		        $("#fName0").val("price"); $("#fType0").val("builtin.money");$("#nlg0").val("What is the property price?"); $("#implicit0").val("the price is {price}");
+		        $("#fName1").val("percentDown"); $("#fType1").val("builtin.percentage");$("#nlg1").val("What is the downpayment percent?"); $("#implicit1").val("downpayment is {percentDown}");
+		        $("#fName2").val("zipcode"); $("#fType2").val("ZipCode");$("#nlg2").val("What is the zipcode?");  $("#implicit2").val("zip code is {zipcode}");
+		        updateConstraintsFields();
 
 		     }
 

@@ -170,6 +170,15 @@
 				<effect util="1.0">
 					<set value="Start" var="a_m"/>
 				</effect>
+			</case>
+			<case>
+				<condition>
+					<if relation="contains" value="Other" var="a_u"/>
+					<if relation="=" value="None" var="FocusSlot"/>
+				</condition>
+				<effect util="1.0">
+					<set value="Start2" var="a_m"/>
+				</effect>
 			</case>	
 			<case>
 				<condition operator="or">
@@ -238,7 +247,7 @@
 		<rule> 
 			<case>
 				<condition>
-					<if relation="=" value="Start" var="a_m"/>
+					<if relation="=" value="(Start|Start2)" var="a_m"/>
 					<if relation="in" value="{Slots}" var="Slot"/>
 				</condition>
 				<effect>
@@ -286,7 +295,7 @@
 		<rule id="nextquestion">
 			<case>
 				<condition>
-					<if var="a_m" relation="!=" value="Start"/>
+					<if relation="!=" value="Start" var="a_m"/>
 					<if var="Slot" relation="in" value="{Slots}"/>
 					<if relation="!contains" value="{Slot}" var="grounded"/>
 				</condition>
